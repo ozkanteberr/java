@@ -1,91 +1,113 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);   //input almak için gerekli komut
-        int islem=0;
+        Scanner scanner = new Scanner(System.in);
+        int choose=0,sTotal=0;
 
-        System.out.println("---Kafe Yönetim Paneline Hoşgeldiniz---");
+        String [] products = {"Ekmek","Yumurta(30)","Bakliyat K.","Dondurma","Cips","Su"};
+        double [] prices = {25,160,380,65,45,10};
+
+        ArrayList<String> order= new ArrayList<>();
+        ArrayList<Double> total= new ArrayList<>();
+        ArrayList<Integer> quantity= new ArrayList<>();
+
         System.out.print("Bakiyenizi girin:");
-        int bakiye = scanner.nextInt();   //kullanıcı bakiyesi alınır.
-        //tek boyutlu diziler ile statik olarak yiyecek,icecek ve fiyat listesi tanımlanır.
-        String [] yiyecekListesi = {"Gözleme","Patates Kızartması","Kaşarlı Tost","Sandviç","Poğaça"};
-        int [] yiyecekFiyat= {60,55,40,45,20};
-        String [] icecekListesi = {"Türk Kahvesi","Su","Çay","Limonata","Meyve Suyu"};
-        int [] icecekFiyat = {54,10,15,25,20};
-        //kullanıcın oluşturduğu siparişler buradaki dizide tutulur.
-        String [] siparisListesi = new String[20];
-        int [][] siparisFis= new int [20][2];
-        int index=0;
-        //kullanıcı çıkış yapana kadar menü listelenir.
-        while(islem !=4){
-            System.out.println("Bakiyeniz:"+bakiye);
-            System.out.println("1-Yiyecekleri Listele");
-            System.out.println("2-İçecekleri Listele");
-            System.out.println("3-Siparişini görüntüle");
-            System.out.println("4-Sistemden çıkış yap");
-            System.out.print("İşlem numarası girin:");
-            islem=scanner.nextInt();
-            if(islem==1){
-                //yiyecek listesi görüntülenir.
-                System.out.println("---Yiyecek Listesi---");
-                for(int i=0;i<yiyecekListesi.length;i++){
-                    System.out.println(i+1+"."+yiyecekListesi[i]+"   ->"+yiyecekFiyat[i]+"TL");
-                }
-                System.out.println("Siparis vermek istediğin ürün kodunu girin:");
-                int kod = scanner.nextInt();
-                System.out.println("Adet giriniz:");
-                int adet = scanner.nextInt();
-                // bakiye ve üürn kodu kontrolü yapılır.
-                if(adet*yiyecekFiyat[kod-1]>=bakiye){
-                    System.out.println("Bakiye yetersiz");
-                }else if ( kod<=0 || kod> yiyecekListesi.length ){
-                    System.out.println("Geçersiz ürün kodu");
-                }else {
-                    siparisListesi[index]= yiyecekListesi[kod-1];
-                    siparisFis[index][0]= adet;
-                    siparisFis [index][1] = adet*yiyecekFiyat[kod-1];
-                    bakiye -= adet*yiyecekFiyat[kod-1];
-                    index ++;
-                }
+        int balance =scanner.nextInt();
 
-            }else if (islem ==2){
-                System.out.println("---Icecek Listesi---");
-                for(int i=0;i<icecekListesi.length;i++){
-                    System.out.println(i+1+"."+icecekListesi[i]+"   ->"+icecekFiyat[i]+"TL");
-                }
-                System.out.println("Siparis vermek istediğin ürün kodunu girin:");
-                int kod = scanner.nextInt();
-                System.out.println("Adet giriniz:");
-                int adet = scanner.nextInt();
-                // bakiye ve üürn kodu kontrolü yapılır.
-                if(adet*icecekFiyat[kod-1]>=bakiye){
-                    System.out.println("Bakiye yetersiz");
-                }else if ( kod<=0 || kod>icecekListesi.length ){
-                    System.out.println("Geçersiz ürün kodu");
-                }else {
-                    siparisListesi[index] = icecekListesi[kod - 1];
-                    siparisFis[index][0] = adet;
-                    siparisFis[index][1] = adet * icecekFiyat[kod - 1];
-                    bakiye -= adet * icecekFiyat[kod - 1];
-                    index++;
-                }
-            }
-            //siparis fisi oluşturulur.
-            else if (islem ==3){
-                System.out.println("---Siparis Fisi ---");
-                for(int i=0;i<siparisListesi.length;i++){
-                    if(siparisListesi[i] != null){
-                        System.out.println(siparisFis[i][0]+"x  "+siparisListesi[i]+"  "+siparisFis[i][1]+"TL");
-                    }
-                }
-            }
-            //döngüden çıkılır.
-            else if( islem == 4){
+        while(choose!=5){
+            System.out.println("---Sanal Markete Hoşgeldin---");
+            System.out.println("Bakiye:"+ balance);
+            menuyuListele();
+            System.out.print("İşlem numarası girin:");
+            choose=scanner.nextInt();
+
+            switch(choose){
+                case 1:
+                    urunleriListele(products,prices);
+                   break;
+                case 2:
+                    urunleriListele(products,prices);
+                    urunEkle(products,prices,order,total,quantity);
+
                 break;
-            }else {
-                System.out.println("Gecersiz islem numarası");
+                case 3:
+                    sepetiGoruntule(order,total,quantity);
+                    break;
+                case 4:
+                    odemeYap(balance,sTotal,total);
+                    break;
+                case 5:
+                    System.out.println("Çıkış yapıldı,görüşmek üzere");
+                    break;
+                default:
+                    System.out.println("Geçersiz işlem numarası");
+                    break;
             }
         }
     }
+    public static void menuyuListele(){
+        System.out.println("1.Ürünleri Listele");
+        System.out.println("2.Sepete Ekle");
+        System.out.println("3.Sepeti Görüntüle");
+        System.out.println("4.Ödeme Yap");
+        System.out.println("5.Çıkış Yap!");
+    }
+    public static void urunleriListele(String [] products,double [] prices){
+        for(int i=0;i< products.length;i++){
+            System.out.println(i+1 + ".   "+products[i] + "  -> "+ prices[i]+"TL");
+        }
+    }
+
+    public static void urunEkle(String [] products,double [] prices,ArrayList<String>order,ArrayList<Double> total,ArrayList<Integer> quantity){
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Septenize eklemek istediğiniz ürün kodunu girin:");
+        int productId=scanner.nextInt();
+        if(productId<0 || productId>products.length){
+            System.out.println("Geçersiz ürün numarası!");
+        }else{
+            System.out.print("Adet girin:");
+            int quanty=scanner.nextInt();
+            if(quanty<0){
+                System.out.println("0'Dan büyük deger giriniz!");
+            }else{
+                order.add(products[productId-1]);
+                total.add(prices[productId-1]*quanty);
+                quantity.add(quanty);
+            }
+
+        }
+    }
+    public static void sepetiGoruntule(ArrayList<String>order,ArrayList<Double> total,ArrayList<Integer> quantity){
+        int sTotal=0;
+        System.out.println("---Sepetim---");
+        System.out.println("Adet     ÜrünAdı    Fiyat");
+        System.out.println("----     -------    -----");
+        for(int i=0;i<order.toArray().length;i++){
+            System.out.println(quantity.get(i)+"        "+order.get(i)+"     "+total.get(i));
+            sTotal+=total.get(i);
+        }
+        System.out.println("Total:              "+sTotal);
+    }
+    public static void odemeYap(int balance,double sTotal,ArrayList<Double> total){
+        Scanner scanner=new Scanner(System.in);
+        for(double pPrice:total){
+            sTotal+=pPrice;
+        }
+        if(balance>=sTotal){
+            System.out.print("Sepeti onaylıyor musunuz(e-h):");
+            String ans=scanner.nextLine();
+            if(ans.equalsIgnoreCase("e")){
+                System.out.println("Ödeme yapıldı,teşekkür ederiz");
+                balance-=sTotal;
+            }else{
+                System.out.println("Ödeme yapılmadı!");
+            }
+        }else{
+            System.out.println("Bakiyeniz yetersiz ödeme yapılamaz!");
+        }
+    }
+
 }
